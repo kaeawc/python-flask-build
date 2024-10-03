@@ -1,0 +1,144 @@
+name: "Commit"
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+permissions:
+  checks: write
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: "Cache pip dependencies"
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      - name: "Install dependencies"
+        run: pip install tox
+
+      - name: "Run lint"
+        run: tox -e lint
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: "Cache pip dependencies"
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      - name: "Install dependencies"
+        run: pip install tox
+
+      - name: "Run format"
+        run: tox -e format
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: "Cache pip dependencies"
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      - name: "Install dependencies"
+        run: pip install tox
+
+      - name: "Run typecheck"
+        run: tox -e typecheck
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: "Cache pip dependencies"
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      - name: "Install dependencies"
+        run: pip install tox
+
+      - name: "Run coverage"
+        run: tox -e coverage
+
+      - name: "Archive Coverage Report"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: reports/coverage/coverage.log
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Go"
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: "Install gosec"
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+      - name: "Run gosec"
+        run: |
+          gosec -fmt=junit-xml -out=gosec-report.xml ./...
+
+      - name: "Check if security report was created"
+        id: gosec-report-exists
+        uses: andstor/file-existence-action@v2
+        with:
+          files: "gosec-report.xml"
+
+      - name: "Publish Security Report"
+        uses: mikepenz/action-junit-report@v4
+        if: steps.gosec-report-exists.outputs.files_exists == 'true'
+        with:
+          report_paths: 'gosec-report.xml'

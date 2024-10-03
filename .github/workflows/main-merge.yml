@@ -1,0 +1,27 @@
+name: "Merge to main"
+
+on:
+  push:
+    branches:
+      - main  # Only trigger when pushing to the main branch
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Log in to GitHub Docker registry"
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: "Build Docker image"
+        run: docker build -f ci/Dockerfile -t ghcr.io/${{ github.repository_owner }}/python-build:latest .
+
+      - name: "Push Docker image"
+        run: docker push ghcr.io/${{ github.repository_owner }}/python-build:latest
