@@ -21,5 +21,6 @@ setup(
         "requests==2.32.3",
         "tox==4.21.1",
         "PyYaml==6.0.2==",
+        "flask==3.0.3",
     ],
     zip_safe=False)
