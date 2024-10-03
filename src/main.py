@@ -1,6 +1,6 @@
 import os
 import sys
-from core.logging import logging
+from core.logging import logger
 from flask import Flask, jsonify
 
 # Create a Flask app
@@ -10,7 +10,7 @@ app = Flask(__name__)
 # Status route, returns a JSON response
 @app.route("/status", methods=["GET"])
 def status():
-    logging.debug("Status endpoint was accessed")
+    logger.debug("Status endpoint was accessed")
     return jsonify({"status": "OK", "message": "The application is running smoothly"})
 
 
@@ -38,5 +38,5 @@ def get_debug_flag():
 if __name__ == "__main__":
     port = get_port()
     is_debug = get_debug_flag()
-    logging.info(f"Starting the Flask app on port {port} with debug={is_debug}")
+    logger.info(f"Starting the Flask app on port {port} with debug={is_debug}")
     app.run(host="0.0.0.0", port=port, debug=is_debug)

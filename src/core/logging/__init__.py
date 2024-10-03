@@ -20,4 +20,4 @@ def setup_logging(config_path=config_path):
 setup_logging()
 
 # Expose the root logger
-logging = logging.getLogger()  # This grabs the default root logger
+logger = logging.getLogger()  # This grabs the default root logger

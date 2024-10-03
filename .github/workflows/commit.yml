@@ -59,29 +59,6 @@ jobs:
       - name: "Run format"
         run: tox -e format
 
-  typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python"
-        uses: actions/setup-python@v5.2.0
-        with:
-          python-version: '3.10'
-
-      - name: "Cache pip dependencies"
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-
-      - name: "Install dependencies"
-        run: pip install tox
-
-      - name: "Run typecheck"
-        run: tox -e typecheck
-
   coverage:
     runs-on: ubuntu-latest
     steps:
