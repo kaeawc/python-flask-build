@@ -2,5 +2,5 @@ from core.logging import logging
 
 def add(a: int, b: int) -> int:
     result = a + b
-    logging.info('%d + %d = %d')
+    logging.debug('%d + %d = %d', a, b, result)
     return result

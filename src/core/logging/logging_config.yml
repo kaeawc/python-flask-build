@@ -17,5 +17,5 @@ handlers:
         backupCount: 3
 
 root:
-    level: DEBUG
+    level: INFO
     handlers: [console, file]
