@@ -110,7 +110,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: reports/coverage/coverage.log
+          path: reports/coverage/
 
   bandit:
     runs-on: ubuntu-latest
@@ -132,7 +132,7 @@ jobs:
       - name: "Install dependencies"
         run: pip install tox
 
-      - name: "Run coverage"
+      - name: "Run bandit"
         run: tox -e bandit
 
       - name: "Archive Bandit Report"
