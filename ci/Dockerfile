@@ -17,5 +17,11 @@ EXPOSE 80
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Run src/main.py when the container launches
-CMD ["python", "src/main.py"]
+# Default port and debug flag for development
+ARG PORT=5000
+ARG DEBUG=false
+ENV PORT=${PORT}
+ENV DEBUG=${DEBUG}
+
+# Run the app, pass both the port and debug flag as arguments
+CMD ["python", "src/main.py", "$PORT", "$DEBUG"]
