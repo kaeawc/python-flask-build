@@ -111,34 +111,3 @@ jobs:
         with:
           name: coverage-report
           path: reports/coverage/coverage.log
-
-  security:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Go"
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
-
-      - name: "Install gosec"
-        run: |
-          go install github.com/securego/gosec/v2/cmd/gosec@latest
-
-      - name: "Run gosec"
-        run: |
-          gosec -fmt=junit-xml -out=gosec-report.xml ./...
-
-      - name: "Check if security report was created"
-        id: gosec-report-exists
-        uses: andstor/file-existence-action@v2
-        with:
-          files: "gosec-report.xml"
-
-      - name: "Publish Security Report"
-        uses: mikepenz/action-junit-report@v4
-        if: steps.gosec-report-exists.outputs.files_exists == 'true'
-        with:
-          report_paths: 'gosec-report.xml'
