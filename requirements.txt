@@ -7,4 +7,4 @@ nose2==0.15.1
 pycodestyle==2.12.1
 PyYaml==6.0.2
 requests==2.32.3
-tox==4.21.1
+tox==4.21.2
