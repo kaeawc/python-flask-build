@@ -1,3 +1,5 @@
+[![Commit](https://github.com/kaeawc/python-flask-build/actions/workflows/commit.yml/badge.svg)](https://github.com/kaeawc/python-flask-build/actions/workflows/commit.yml)
+
 # Python Flask Build
 
 Experimental Python build tooling, references, and CI pipeline for a Flask web server. The goal is to showcase best practices as well as be a good foundation for starting out a new Flask project.
