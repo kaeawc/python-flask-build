@@ -12,7 +12,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        "coverage==7.6.1",
+        "coverage==7.6.2",
         "Delorean==1.0.0",
         "ipdb==0.13.13",
         "mock==5.1.0",
