@@ -19,7 +19,7 @@ setup(
         "nose2==0.15.1",
         "pycodestyle==2.12.1",
         "requests==2.32.3",
-        "tox==4.22.0",
+        "tox==4.23.0",
         "PyYaml==6.0.2",
         "flask==3.0.3",
     ],
