@@ -8,7 +8,9 @@ WORKDIR /app
 COPY . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+RUN uv sync
+RUN source ./.venv/bin/activate
 
 # Make port 80 available to the world outside this container (if needed)
 EXPOSE 80
