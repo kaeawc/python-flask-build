@@ -1,0 +1,69 @@
+#file: noinspection YAMLSchemaValidation
+name: "run-with-uv"
+description: ""
+inputs:
+  run-tasks:
+    description: "Set of tasks to be executed by uv run"
+    example: '["tox -e lint", "tox"]'
+    required: "true"
+  shell:
+    description: "The shell to use for any steps that use shells"
+    default: "bash"
+    required: "true"
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: "Restore UV"
+      id: cache-uv
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          /home/runner/.local/bin/uv
+          /home/runner/.local/bin/uvx
+        key: v1-${{ runner.os }}-uv
+
+    - name: "Install UV"
+      if: steps.cache-uv.outputs.cache-hit != 'true'
+      run: |
+        # TODO: Should check version and binary checksum
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    - name: "Save UV"
+      uses: actions/cache/save@v4
+      if: steps.cache-uv.outputs.cache-hit != 'true'
+      with:
+        path: |
+          /home/runner/.local/bin/uv
+          /home/runner/.local/bin/uvx
+        key: v1-${{ runner.os }}-uv
+
+    - name: "Set up jemalloc"
+      uses: kaeawc/setup-jemalloc@v0.0.2
+
+    - name: "Restore Dependencies"
+      id: cache-dependencies
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          /home/runner/.cache/uv
+        key: v1-${{ runner.os }}-uv
+
+    - name: "Sync Dependencies"
+      run: |
+        uv sync
+
+    - name: "Run bandit"
+      run: uv run ${{ inputs.run-tasks }}
+
+    - name: "Cleanup UV"
+      run: uv cache prune --ci
+
+    - name: "Save UV"
+      uses: actions/cache/save@v4
+      if: steps.cache-dependencies.outputs.cache-hit != 'true'
+      with:
+        path: |
+          /home/runner/.cache/uv
+        key: v1-${{ runner.os }}-uv

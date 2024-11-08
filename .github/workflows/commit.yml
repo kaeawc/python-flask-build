@@ -1,63 +1,40 @@
 name: "Commit"
 
 on:
-  push:
-    branches:
-      - '*'
+  workflow_dispatch:
   pull_request:
     branches:
-      - '*'
+      - "**"
+  push:
+    branches:
+      - main
 
 permissions:
   checks: write
   contents: read
+  packages: write
 
 jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/run-with-uv
+        with:
+          run-tasks: "tox"
+
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python"
-        uses: actions/setup-python@v5.2.0
+      - uses: ./.github/actions/run-with-uv
         with:
-          python-version: '3.10'
-
-      - name: "Cache pip dependencies"
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-
-      - name: "Install dependencies"
-        run: pip install tox
-
-      - name: "Run lint"
-        run: tox -e lint
+          run-tasks: "tox -e lint"
 
   format:
     runs-on: ubuntu-latest
     steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python"
-        uses: actions/setup-python@v5.2.0
+      - uses: ./.github/actions/run-with-uv
         with:
-          python-version: '3.10'
-
-      - name: "Cache pip dependencies"
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-
-      - name: "Install dependencies"
-        run: pip install tox
-
-      - name: "Run format"
-        run: tox -e format
+          run-tasks: "tox -e format"
 
   coverage:
     runs-on: ubuntu-latest
@@ -65,22 +42,9 @@ jobs:
       - name: "Git Checkout"
         uses: actions/checkout@v4
 
-      - name: "Set up Python"
-        uses: actions/setup-python@v5.2.0
+      - uses: ./.github/actions/run-with-uv
         with:
-          python-version: '3.10'
-
-      - name: "Cache pip dependencies"
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-
-      - name: "Install dependencies"
-        run: pip install tox
-
-      - name: "Run coverage"
-        run: tox -e coverage
+          run-tasks: "tox -e coverage"
 
       - name: "Archive Coverage Report"
         if: always()
@@ -95,22 +59,9 @@ jobs:
       - name: "Git Checkout"
         uses: actions/checkout@v4
 
-      - name: "Set up Python"
-        uses: actions/setup-python@v5.2.0
+      - uses: ./.github/actions/run-with-uv
         with:
-          python-version: '3.10'
-
-      - name: "Cache pip dependencies"
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-
-      - name: "Install dependencies"
-        run: pip install tox
-
-      - name: "Run bandit"
-        run: tox -e bandit
+          run-tasks: "tox -e bandit"
 
       - name: "Archive Bandit Report"
         if: always()
@@ -118,3 +69,19 @@ jobs:
         with:
           name: bandit-report
           path: reports/bandit/report.xml
+
+  build-image:
+    runs-on: ubuntu-latest
+    if: github.secret_source == 'Actions' && github.ref == 'refs/heads/main'
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Log in to GitHub Docker registry"
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: "Build Docker image"
+        run: docker build -f ci/Dockerfile -t ghcr.io/${{ github.repository_owner }}/python-build:latest .
+
+      - name: "Push Docker image"
+        run: docker push ghcr.io/${{ github.repository_owner }}/python-build:latest
