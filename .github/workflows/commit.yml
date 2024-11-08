@@ -92,6 +92,10 @@ jobs:
       - name: "Git Checkout"
         uses: actions/checkout@v4
 
+      - uses: ./.github/actions/run-with-uv
+        with:
+          run-tasks: "--version"
+
       - name: "Log in to GitHub Docker registry"
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
