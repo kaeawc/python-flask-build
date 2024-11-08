@@ -61,11 +61,13 @@ runs:
       run: uv run ${{ inputs.run-tasks }}
 
     - name: "Cleanup UV Cache"
+      if: steps.cache-dependencies.outputs.cache-hit != 'true'
       shell: ${{ inputs.shell }}
       run: uv cache prune --ci
 
     - name: "Save UV"
       uses: actions/cache/save@v4
+      if: steps.cache-dependencies.outputs.cache-hit != 'true'
       with:
         path: |
           /home/runner/.cache/uv
