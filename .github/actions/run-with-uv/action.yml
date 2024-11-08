@@ -26,6 +26,7 @@ runs:
 
     - name: "Install UV"
       if: steps.cache-uv.outputs.cache-hit != 'true'
+      shell: ${{ inputs.shell }}
       run: |
         # TODO: Should check version and binary checksum
         curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -48,22 +49,24 @@ runs:
       with:
         path: |
           /home/runner/.cache/uv
-        key: v1-${{ runner.os }}-uv
+        key: v1-${{ runner.os }}-uv-dependencies-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('tox.ini') }}
 
     - name: "Sync Dependencies"
+      shell: ${{ inputs.shell }}
       run: |
         uv sync
 
-    - name: "Run bandit"
+    - name: "Run Tasks"
+      shell: ${{ inputs.shell }}
       run: uv run ${{ inputs.run-tasks }}
 
-    - name: "Cleanup UV"
+    - name: "Cleanup UV Cache"
+      shell: ${{ inputs.shell }}
       run: uv cache prune --ci
 
     - name: "Save UV"
       uses: actions/cache/save@v4
-      if: steps.cache-dependencies.outputs.cache-hit != 'true'
       with:
         path: |
           /home/runner/.cache/uv
-        key: v1-${{ runner.os }}-uv
+        key: v1-${{ runner.os }}-uv-dependencies-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('tox.ini') }}
