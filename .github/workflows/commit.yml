@@ -82,6 +82,12 @@ jobs:
   build-image:
     runs-on: ubuntu-latest
     if: github.secret_source == 'Actions' && github.ref == 'refs/heads/main'
+    needs:
+      - unit-tests
+      - lint
+      - format
+      - coverage
+      - bandit
     steps:
       - name: "Git Checkout"
         uses: actions/checkout@v4
