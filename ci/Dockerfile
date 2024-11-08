@@ -1,6 +1,9 @@
 # Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
+# Change default shell from /bin/ash to /bin/bash
+SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
+
 # Set the working directory in the container
 WORKDIR /app
 
