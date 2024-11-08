@@ -10,9 +10,6 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Make port 80 available to the world outside this container (if needed)
-EXPOSE 80
-
 # Define environment variable
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -22,6 +19,9 @@ ARG PORT=5000
 ARG DEBUG=false
 ENV PORT=${PORT}
 ENV DEBUG=${DEBUG}
+
+# Make port available to the world outside this container (if needed)
+EXPOSE ${PORT}
 
 RUN source ./.venv/bin/activate
 
