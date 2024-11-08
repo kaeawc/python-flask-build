@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='python-flask-build',
-    version='0.0.1',
-    description='Python Flask Build',
-    url='https://github.com/kaeawc/python-flask/',
-    author='Jason Pearson',
-    author_email='jason.d.pearson@gmail.com',
-    license='MIT',
+    name="python-flask-build",
+    version="0.0.1",
+    description="Python Flask Build",
+    url="https://github.com/kaeawc/python-flask/",
+    author="Jason Pearson",
+    author_email="jason.d.pearson@gmail.com",
+    license="MIT",
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
@@ -22,4 +22,5 @@ setup(
         "PyYaml==6.0.2",
         "flask==3.0.3",
     ],
-    zip_safe=False)
+    zip_safe=False,
+)
