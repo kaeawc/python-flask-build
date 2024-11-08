@@ -1,0 +1,19 @@
+[project]
+name = "python-flask-build"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "coverage>=7.6.4",
+    "delorean>=1.0.0",
+    "flask>=3.0.3",
+    "ipdb>=0.13.13",
+    "mock>=5.1.0",
+    "nose2>=0.15.1",
+    "pycodestyle>=2.12.1",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.3",
+    "ruff>=0.7.2",
+    "tox>=4.23.2",
+]
