@@ -20,7 +20,7 @@ setup(
         "requests==2.32.3",
         "tox==4.23.2",
         "PyYaml==6.0.2",
-        "flask==3.0.3",
+        "flask==3.1.0",
     ],
     zip_safe=False,
 )
