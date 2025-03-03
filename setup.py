@@ -14,7 +14,7 @@ setup(
         "coverage==7.6.12",
         "Delorean==1.0.0",
         "ipdb==0.13.13",
-        "mock==5.1.0",
+        "mock==5.2.0",
         "nose2==0.15.1",
         "pycodestyle==2.12.1",
         "requests==2.32.3",
