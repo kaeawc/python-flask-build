@@ -16,7 +16,7 @@ setup(
         "ipdb==0.13.13",
         "mock==5.1.0",
         "nose2==0.15.1",
-        "pycodestyle==2.12.1",
+        "pycodestyle==2.13.0",
         "requests==2.32.3",
         "tox==4.24.1",
         "PyYaml==6.0.2",
