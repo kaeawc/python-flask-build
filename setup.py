@@ -17,7 +17,7 @@ setup(
         "mock==5.2.0",
         "nose2==0.15.1",
         "pycodestyle==2.14.0",
-        "requests==2.32.4",
+        "requests==2.32.5",
         "tox==4.28.3",
         "PyYaml==6.0.2",
         "flask==3.1.2",
