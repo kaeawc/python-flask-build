@@ -19,7 +19,7 @@ setup(
         "pycodestyle==2.14.0",
         "requests==2.32.5",
         "tox==4.28.4",
-        "PyYaml==6.0.2",
+        "PyYaml==6.0.3",
         "flask==3.1.2",
     ],
     zip_safe=False,
