@@ -14,6 +14,6 @@ dependencies = [
     "pycodestyle>=2.12.1",
     "pyyaml>=6.0.2",
     "requests>=2.32.3",
-    "ruff>=0.7.2",
+    "ruff>=0.15.10",
     "tox>=4.23.2",
 ]
