@@ -1,0 +1,11 @@
+.venv
+.git
+.github
+.idea
+.local
+.tox
+.coverage
+htmlcov
+reports
+**/__pycache__
+**/*.pyc
