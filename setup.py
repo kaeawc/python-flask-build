@@ -23,6 +23,7 @@ setup(
         "tox==4.53.1",
         "PyYaml==6.0.3",
         "flask==3.1.3",
+        "tzdata==2026.6",
     ],
     zip_safe=False,
 )
