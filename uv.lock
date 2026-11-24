@@ -223,16 +223,18 @@ wheels = [
 
 [[package]]
 name = "delorean"
-version = "1.0.0"
+version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "babel" },
     { name = "humanize" },
     { name = "python-dateutil" },
-    { name = "pytz" },
     { name = "tzlocal" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/76/40/5e8d179a0311236b2e83aa1c80b0b363700035ad6639858c75ef5be975e6/Delorean-1.0.0.tar.gz", hash = "sha256:fe67786e12338523848bec5588a658c4d425e12d53eb51cfef870bec8f576134", size = 18988, upload-time = "2018-02-07T21:11:54.105Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/74/dc/75b18ada17d90411814cbeec8ae6304ff8422bbc07428ad6e771694a3c96/delorean-2.0.0.tar.gz", hash = "sha256:63913ec424555a9d47f521a7af3db24a1c2e3b19063fe26e01943f192eab35e9", size = 137188, upload-time = "2026-08-01T22:30:16.808Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8d/4a/f84bf68656d0e7fd2e9f6e10c6487d7b0764372deb6ce04c41d748d0d032/delorean-2.0.0-py3-none-any.whl", hash = "sha256:da563ee41346f913c0b146a0d4eb0f6e22d3aee76f58ef281e61c421589398a6", size = 12325, upload-time = "2026-08-01T22:30:15.894Z" },
+]
 
 [[package]]
 name = "distlib"
@@ -643,12 +645,13 @@ dependencies = [
     { name = "requests" },
     { name = "ruff" },
     { name = "tox" },
+    { name = "tzdata" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "coverage", specifier = ">=7.6.4" },
-    { name = "delorean", specifier = ">=1.0.0" },
+    { name = "delorean", specifier = ">=2.0.0" },
     { name = "flask", specifier = ">=3.0.3" },
     { name = "ipdb", specifier = ">=0.13.13" },
     { name = "mock", specifier = ">=5.1.0" },
@@ -658,15 +661,7 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.3" },
     { name = "ruff", specifier = ">=0.15.10" },
     { name = "tox", specifier = ">=4.23.2" },
-]
-
-[[package]]
-name = "pytz"
-version = "2024.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/3a/31/3c70bf7603cc2dca0f19bdc53b4537a797747a58875b552c8c413d963a3f/pytz-2024.2.tar.gz", hash = "sha256:2aa355083c50a0f93fa581709deac0c9ad65cca8a9e9beac660adcbd493c798a", size = 319692, upload-time = "2024-09-11T02:24:47.91Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/c3/005fcca25ce078d2cc29fd559379817424e94885510568bc1bc53d7d5846/pytz-2024.2-py2.py3-none-any.whl", hash = "sha256:31c7c1817eb7fae7ca4b8c7ee50c72f93aa2dd863de768e1ef4245d426aa0725", size = 508002, upload-time = "2024-09-11T02:24:45.8Z" },
+    { name = "tzdata", specifier = ">=2026.6" },
 ]
 
 [[package]]
@@ -844,11 +839,11 @@ wheels = [
 
 [[package]]
 name = "tzdata"
-version = "2024.2"
+version = "2026.6"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e1/34/943888654477a574a86a98e9896bae89c7aa15078ec29f490fef2f1e5384/tzdata-2024.2.tar.gz", hash = "sha256:7d85cc416e9382e69095b7bdf4afd9e3880418a2413feec7069d533d6b4e31cc", size = 193282, upload-time = "2024-09-23T18:56:46.89Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7a/29/6a1391d31cd00ff9e927215a224a880e1e84e826b64ba80a499e51c074d8/tzdata-2026.6.tar.gz", hash = "sha256:85d2cd9c09f81f0bb29db27759fc83af4f1e620efb814f8c5bf8b4cc4feece6d", size = 201017, upload-time = "2026-10-28T09:57:09.137Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/ab/7e5f53c3b9d14972843a647d8d7a853969a58aecc7559cb3267302c94774/tzdata-2024.2-py2.py3-none-any.whl", hash = "sha256:a48093786cdcde33cad18c2555e8532f34422074448fbc874186f0abd79565cd", size = 346586, upload-time = "2024-09-23T18:56:45.478Z" },
+    { url = "https://files.pythonhosted.org/packages/0a/66/9a06c2227fedfd4919f0eaaa8b94377d9730882a7e4f95823c9a331ab5e1/tzdata-2026.6-py2.py3-none-any.whl", hash = "sha256:0a10eec6e13ef16b627fabed9a5f2ba61a62b1c67f327305f4e7e412a70b4aec", size = 348210, upload-time = "2026-10-28T09:57:07.276Z" },
 ]
 
 [[package]]

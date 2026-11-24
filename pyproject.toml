@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "coverage>=7.6.4",
-    "delorean>=1.0.0",
+    "delorean>=2.0.0",
     "flask>=3.0.3",
     "ipdb>=0.13.13",
     "mock>=5.1.0",
@@ -16,4 +16,5 @@ dependencies = [
     "requests>=2.32.3",
     "ruff>=0.15.10",
     "tox>=4.23.2",
+    "tzdata>=2026.6",
 ]

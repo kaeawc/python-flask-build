@@ -12,7 +12,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "coverage==7.13.5",
-        "Delorean==1.0.0",
+        "Delorean==2.0.0",
         "ipdb==0.13.13",
         "mock==5.2.0",
         "nose2==0.16.0",
@@ -23,6 +23,7 @@ setup(
         "tox==4.53.1",
         "PyYaml==6.0.3",
         "flask==3.1.3",
+        "tzdata==2026.6",
     ],
     zip_safe=False,
 )
