@@ -1,12 +1,27 @@
-# Please see the documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
+# https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+# The uv ecosystem updates pyproject.toml and uv.lock together (pip would leave uv.lock stale).
 version: 2
 updates:
-  - package-ecosystem: "pip"
-    directory: "/" # Location of package manifests
-    target-branch: "main"
+  - package-ecosystem: uv
+    directory: /
     schedule:
-      interval: "daily"
-      time: "08:00"
-      timezone: "EST"
+      interval: weekly
+    groups:
+      # Dev tools land in one PR; app dependencies stay separate so each is reviewed on its own.
+      dev-tools:
+        dependency-type: development
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directory: /ci
+    schedule:
+      interval: weekly
+    groups:
+      images:
+        patterns: ["*"]
