@@ -1,11 +1,10 @@
-.venv
-.git
-.github
-.idea
-.local
-.tox
-.coverage
-htmlcov
-reports
+# The image only copies pyproject.toml, uv.lock, README.md, gunicorn.conf.py and src/;
+# keep everything else out of the build context.
+*
+!pyproject.toml
+!uv.lock
+!README.md
+!gunicorn.conf.py
+!src/
 **/__pycache__
 **/*.pyc
