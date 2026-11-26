@@ -21,7 +21,7 @@ setup(
         "tox==4.65.0",
         "requests==2.34.2",
         "tox==4.65.0",
-        "PyYaml==6.0.3",
+        "PyYaml==6.0.4",
         "flask==3.1.3",
         "tzdata==2026.6",
     ],
