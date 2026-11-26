@@ -1,109 +1,173 @@
 name: "Commit"
 
+# PRs (including Dependabot's) and main. Every job is one `make` target, so `make ci` reproduces
+# them locally. Actions are pinned by full commit SHA; Dependabot bumps the SHA and the comment.
 on:
-  workflow_dispatch:
-  pull_request:
-    branches:
-      - "**"
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 
+# Least privilege by default; jobs that need more ask for it.
 permissions:
-  checks: write
   contents: read
-  packages: write
+
+concurrency:
+  # A new push to a PR supersedes its in-flight run; main runs always finish.
+  group: commit-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  # uv must use the versions in uv.lock and never rewrite it.
+  UV_LOCKED: "1"
 
 jobs:
-  unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - uses: ./.github/actions/run-with-uv
-        with:
-          run-tasks: "tox"
-
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - uses: ./.github/actions/run-with-uv
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          run-tasks: "tox -e lint"
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: true
+      - name: "uv.lock matches pyproject.toml"
+        run: make lock-check
+      - name: "ruff"
+        run: make lint
+      - name: "mypy --strict"
+        run: make typecheck
+      - name: "actionlint"
+        run: make actionlint
 
   format:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - uses: ./.github/actions/run-with-uv
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          run-tasks: "tox -e format"
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: true
+      - run: make fmt-check
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # Keep in step with requires-python in pyproject.toml and PYTHONS in the Makefile.
+        python: ["3.11", "3.12", "3.13", "3.14"]
+    name: unit-tests (${{ matrix.python }})
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python }}
+      - run: uv run pytest
 
   coverage:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - uses: ./.github/actions/run-with-uv
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          run-tasks: "tox -e coverage"
-
-      - name: "Archive Coverage Report"
-        if: always()
-        uses: actions/upload-artifact@v4
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: true
+      - name: "Tests with branch coverage (threshold in pyproject.toml)"
+        run: make test
+      - name: "Coverage summary"
+        if: ${{ !cancelled() && hashFiles('.coverage') != '' }}
+        run: |
+          {
+            echo "### Coverage"
+            uv run coverage report --format=markdown
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: "Archive coverage and JUnit reports"
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-report
-          path: reports/coverage/
+          path: reports/
+          if-no-files-found: ignore
 
   bandit:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - uses: ./.github/actions/run-with-uv
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          run-tasks: "tox -e bandit"
-
-      - name: "Archive Bandit Report"
-        if: always()
-        uses: actions/upload-artifact@v4
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
-          name: bandit-report
-          path: reports/bandit/report.xml
+          enable-cache: true
+      - run: make security
+
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: true
+      - name: "Known vulnerabilities in locked dependencies (pip-audit)"
+        run: make audit
 
   build-image:
     runs-on: ubuntu-latest
-    needs:
-      - unit-tests
-      - lint
-      - format
-      - coverage
-      - bandit
+    timeout-minutes: 20
+    needs: [lint, format, unit-tests, coverage, bandit, audit]
+    permissions:
+      contents: read
+      packages: write
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}/python-build
+      # Only main publishes; every other ref just proves the image builds and serves.
+      PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Build Docker image"
-        run: docker build -f ci/Dockerfile -t ghcr.io/${{ github.repository_owner }}/python-build:latest .
-
-      - name: "Smoke Test Docker image"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: "Build"
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: ci/Dockerfile
+          load: true
+          tags: ${{ env.IMAGE }}:latest,${{ env.IMAGE }}:sha-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: "Smoke test: serves /status, /healthz and /readyz as non-root"
         run: |
-          docker run -d --name smoke-test -p 5000:5000 ghcr.io/${{ github.repository_owner }}/python-build:latest
+          docker run -d --name smoke-test -p 5000:5000 --read-only --tmpfs /tmp "$IMAGE:latest"
           trap 'docker logs smoke-test; docker rm -f smoke-test' EXIT
-          curl --silent --show-error --fail --retry 10 --retry-delay 1 --retry-all-errors http://localhost:5000/status
-
-      - name: "Log in to GitHub Docker registry"
-        if: github.secret_source == 'Actions' && github.ref == 'refs/heads/main'
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-
-      - name: "Push Docker image"
-        if: github.secret_source == 'Actions' && github.ref == 'refs/heads/main'
-        run: docker push ghcr.io/${{ github.repository_owner }}/python-build:latest
+          for path in /status /healthz /readyz; do
+            curl --silent --show-error --fail --retry 10 --retry-delay 1 --retry-all-errors \
+              "http://localhost:5000$path"
+            echo
+          done
+          test "$(docker inspect --format '{{.Config.User}}' "$IMAGE:latest")" = nonroot
+      - name: "Log in to GitHub Container Registry"
+        if: env.PUSH == 'true'
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Push"
+        if: env.PUSH == 'true'
+        run: |
+          docker push "$IMAGE:latest"
+          docker push "$IMAGE:sha-$GITHUB_SHA"
