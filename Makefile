@@ -12,6 +12,13 @@ PYTHONS ?= 3.11 3.12 3.13 3.14
 
 .DEFAULT_GOAL := help
 
+# Fail early with a fix, not a bare "command not found", when uv is missing (help needs no uv).
+ifneq ($(filter-out help,$(or $(MAKECMDGOALS),help)),)
+ifeq ($(shell command -v $(UV) 2>/dev/null),)
+$(error uv not found (UV=$(UV)). Install it: curl -LsSf https://astral.sh/uv/install.sh | sh, or pass UV=/path/to/uv)
+endif
+endif
+
 ##@ Develop
 
 .PHONY: sync
