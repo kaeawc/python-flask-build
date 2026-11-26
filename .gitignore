@@ -163,3 +163,6 @@ out/
 
 # Mac
 .DS_Store
+
+# make audit scratch file
+.audit-requirements.txt
