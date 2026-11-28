@@ -67,6 +67,7 @@ tests/                    pytest, one file per module
 gunicorn.conf.py          production server settings
 ci/Dockerfile             uv build stage -> distroless Python, non-root
 .github/workflows/        commit.yml: CI; every job is a make target
+.buildkite/               Buildkite trial: the same make targets on hosted agents
 ```
 
 ## Docker

@@ -1,0 +1,21 @@
+# Buildkite trial. These steps run the same make targets as the lint, format, unit-tests,
+# coverage, bandit and audit jobs in .github/workflows/commit.yml, on Buildkite's hosted Linux
+# agents (queue `linux-small`: 2 vCPU, 4 GB). The image build and push stays on GitHub Actions.
+# Two steps rather than one per job, because every step boots its own agent and hosted minutes are
+# metered.
+steps:
+  - label: ":python: lock, format, lint, types, security, audit, actionlint"
+    key: checks
+    command: .buildkite/in-uv.sh make lock-check fmt-check lint typecheck security audit actionlint
+    agents:
+      queue: linux-small
+    timeout_in_minutes: 15
+
+  - label: ":test_tube: tests with coverage, then Python 3.11-3.14"
+    key: tests
+    command: .buildkite/in-uv.sh make test test-all
+    artifact_paths:
+      - "reports/**/*"
+    agents:
+      queue: linux-small
+    timeout_in_minutes: 15

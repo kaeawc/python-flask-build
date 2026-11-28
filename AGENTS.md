@@ -67,6 +67,8 @@ While iterating: `uv run pytest tests/test_health.py -k readyz`. After any chang
 - `tests/`: pytest; `conftest.py` has `make_app` (fixed config, sequential request IDs) and `client`.
 - `ci/Dockerfile`: uv build stage, then distroless Python, non-root, base images pinned by digest.
 - `.github/workflows/commit.yml`: CI (see below). `.github/dependabot.yml`: uv, actions, docker.
+- `.buildkite/`: Buildkite trial pipeline (`pipeline.yml`), the image it runs in (`Dockerfile`) and
+  `in-uv.sh`, which runs a command in that image.
 
 ## CI
 
@@ -76,6 +78,12 @@ While iterating: `uv run pytest tests/test_health.py -k readyz`. After any chang
 `audit` (pip-audit on the locked dependencies) and `build-image` (builds the image, smoke-tests
 it read-only as non-root, and pushes to GHCR only from `main`). CodeQL runs through GitHub's
 default setup.
+
+`.buildkite/pipeline.yml` runs the same targets on Buildkite's hosted Linux agents, as a trial: a
+`checks` step (lock-check, fmt-check, lint, typecheck, security, audit, actionlint) and a `tests`
+step (coverage, then every supported Python). Both run inside `.buildkite/Dockerfile` through
+`.buildkite/in-uv.sh`; `.buildkite/in-uv.sh make check` reproduces them locally with Docker. Keep
+the two pipelines' targets in step until the GitHub jobs are removed.
 
 ## Conventions
 
